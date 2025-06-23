@@ -12,7 +12,7 @@ st.title("🎓 UTA Student Retention Probability Predictor")
 
 st.markdown("Fill in the student information below:")
 
-# Categorical values mapping (based on training data)
+# Define categorical options (from training)
 categorical_options = {
     'Gender': ['Male', 'Female'],
     'CapFlag': ['N', 'Y'],
@@ -29,16 +29,19 @@ categorical_options = {
     'AdmitYear': [2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022]
 }
 
-# Input form
+# Use 2 columns for layout
+col1, col2 = st.columns(2)
+
+# Collect user input
 def get_user_input():
     input_data = {}
-    for feature in model.feature_names_in_:
+    for i, feature in enumerate(model.feature_names_in_):
+        col = col1 if i % 2 == 0 else col2
         if feature in categorical_options:
-            choice = st.selectbox(f"{feature}", categorical_options[feature])
-            # Encode as integer code to match training
+            choice = col.selectbox(f"{feature}", categorical_options[feature])
             input_data[feature] = categorical_options[feature].index(choice)
         else:
-            input_data[feature] = st.number_input(f"{feature}", value=0.0)
+            input_data[feature] = col.number_input(f"{feature}", value=0.0)
     return pd.DataFrame([input_data])
 
 input_df = get_user_input()
@@ -46,4 +49,3 @@ input_df = get_user_input()
 if st.button("🔍 Predict Retention"):
     probability = model.predict_proba(input_df)[0][1]
     st.success(f"🎯 Predicted Retention Probability: **{probability * 100:.2f}%**")
-
