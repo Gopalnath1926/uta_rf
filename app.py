@@ -8,7 +8,7 @@ with open("model.pkl", "rb") as f:
     model = pickle.load(f)
 
 st.set_page_config(page_title="UTA Retention Predictor", layout="centered")
-st.title("🎓 UTA Student Retention Probability Predictor")
+st.title("🎓 UTA Student Retention Prototype")
 
 st.markdown("Fill in the student information below:")
 
