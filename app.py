@@ -8,34 +8,42 @@ with open("model.pkl", "rb") as f:
     model = pickle.load(f)
 
 st.set_page_config(page_title="UTA Retention Predictor", layout="centered")
-st.title("🎓 Student Retention Probability Predictor")
+st.title("🎓 UTA Student Retention Probability Predictor")
 
-st.markdown("Enter student information below to predict the probability of retention.")
+st.markdown("Fill in the student information below:")
 
-# Define mappings for categorical fields
-categorical_mappings = {
-    "Gender": {"Female": 0, "Male": 1},
-    # Add more mappings here if needed
+# Categorical values mapping (based on training data)
+categorical_options = {
+    'Gender': ['Male', 'Female'],
+    'CapFlag': ['N', 'Y'],
+    'ExtraCurricularActivities': ['N', 'Y'],
+    'PellEligibility': ['Y', 'N'],
+    'FirstTermEnrolledCollege': [
+        'College of Business',
+        'College of Science',
+        'Col Nurse & Health Innovation',
+        'College of Liberal Arts',
+        'Division of Student Success',
+        'College of Engineering'
+    ],
+    'AdmitYear': [2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022]
 }
 
-# Define input UI
+# Input form
 def get_user_input():
-    input_dict = {}
-
+    input_data = {}
     for feature in model.feature_names_in_:
-        if feature in categorical_mappings:
-            options = list(categorical_mappings[feature].keys())
-            user_choice = st.selectbox(f"{feature}", options)
-            input_dict[feature] = categorical_mappings[feature][user_choice]
+        if feature in categorical_options:
+            choice = st.selectbox(f"{feature}", categorical_options[feature])
+            # Encode as integer code to match training
+            input_data[feature] = categorical_options[feature].index(choice)
         else:
-            input_dict[feature] = st.number_input(f"{feature}", value=0.0)
-    
-    return pd.DataFrame([input_dict])
+            input_data[feature] = st.number_input(f"{feature}", value=0.0)
+    return pd.DataFrame([input_data])
 
-# Collect input
 input_df = get_user_input()
 
-# Predict
 if st.button("🔍 Predict Retention"):
-    proba = model.predict_proba(input_df)[0][1]
-    st.success(f"🎯 Predicted Retention Probability: **{proba * 100:.2f}%**")
+    probability = model.predict_proba(input_df)[0][1]
+    st.success(f"🎯 Predicted Retention Probability: **{probability * 100:.2f}%**")
+
