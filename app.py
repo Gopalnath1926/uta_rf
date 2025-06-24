@@ -33,6 +33,7 @@ categorical_options = {
 col1, col2 = st.columns(2)
 
 # Collect user input
+# Collect user input
 def get_user_input():
     input_data = {}
     for i, feature in enumerate(model.feature_names_in_):
@@ -40,6 +41,8 @@ def get_user_input():
         if feature in categorical_options:
             choice = col.selectbox(f"{feature}", categorical_options[feature])
             input_data[feature] = categorical_options[feature].index(choice)
+        elif feature == "SatTot02":
+            input_data[feature] = col.number_input(f"{feature}", value=1000, step=1, format="%d")
         else:
             input_data[feature] = col.number_input(f"{feature}", value=0.0)
     return pd.DataFrame([input_data])
